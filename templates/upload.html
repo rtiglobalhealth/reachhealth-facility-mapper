@@ -1,0 +1,27 @@
+<!doctype html>
+<title>Get Map Facility Names to UIDs</title>
+<h2>Get Map Facility Names to UIDs</h2>
+<p>
+Provide a list of facility names in a CSV file and the cooresponding list of facilty UIDs will be returned. This can be used when generating the data import files.
+</p>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul class=flashes>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+<form method="post" action="/" enctype="multipart/form-data">
+    <dl>
+		<p>
+			<input type="file" name="file" autocomplete="off" required>
+		</p>
+    </dl>
+    <p>
+		<input type="submit" value="Submit">
+	</p>
+</form>
