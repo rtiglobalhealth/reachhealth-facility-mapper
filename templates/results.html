@@ -1,0 +1,15 @@
+<!doctype html>
+<title>Get Map Facility Names to UIDs</title>
+
+<h2>Here are your UIDs</h2>
+<p>
+Copy and paste this into your import file
+</p>
+<p>
+    {{ message }}
+	{% for uid in uids %}
+        <li>{{ uid }}</li>
+    {% endfor %}
+</p>
+
+<a href="/">Do this again</a>
