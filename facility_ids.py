@@ -1,19 +1,29 @@
 import os
 import urllib.request
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, flash, request, redirect, render_template
+from flask import Flask, flash, request, redirect, render_template, g
 from werkzeug.utils import secure_filename
+import io
+import csv
+import sqlite3
+
 
 app = Flask(__name__)
 ALLOWED_EXTENSIONS = set(['csv'])
 basedir = os.path.abspath(os.path.dirname(__file__))
+DATABASE = 'orgs.sqlite'
 
-class Config(object):
-    # ...
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'orgs.sqlite')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+def connect_db():
+    return sqlite3.connect(DATABASE)
 
+@app.before_request
+def before_request():
+    g.db = connect_db()
+
+@app.teardown_request
+def teardown_request(exception):
+    if hasattr(g, 'db'):
+        g.db.close()
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -21,6 +31,12 @@ def allowed_file(filename):
 @app.route('/')
 def upload_form():
 	return render_template('upload.html')
+
+def query_db(query, args=(), one=False):
+    cur = g.db.execute(query, args)
+    rv = [dict((cur.description[idx][0], value)
+    for idx, value in enumerate(row)) for row in cur.fetchall()]
+    return (rv[0] if rv else None) if one else rv
 
 @app.route('/', methods=['POST'])
 def upload_file():
@@ -37,13 +53,25 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            
+            stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+            csv_input = csv.reader(stream)
+            
             uids=[]
-            uids.append("hello")
-            uids.append("there")
-            adam = "hello htere"
-            #flash('File successfully uploaded')
-			#file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return render_template("results.html", message=adam, uids = uids);
+
+            for row in csv_input:
+                facility = query_db('SELECT id from orgs where "name(en)" = ?',
+                [row[0]], one=True)
+                print(row[0])
+
+                if facility is None:
+                    uids.append("")
+                    print('No such Facility')
+                else:
+                    uids.append(facility['id'])
+                    #print(the_facility + 'has the id' + )
+
+            return render_template("results.html", uids = uids);
         else:
             flash('The only allowed file types is csv')
             return redirect(request.url)
@@ -51,6 +79,4 @@ def upload_file():
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(24)
-    app.config.from_object(Config)
-    db = SQLAlchemy(app)
     app.run(host='0.0.0.0')
