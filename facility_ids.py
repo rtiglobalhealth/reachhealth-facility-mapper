@@ -38,6 +38,12 @@ def query_db(query, args=(), one=False):
     for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
 
+def query_db2(query, args=(), one=False):
+    cur = g.db.execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
 @app.route('/', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
@@ -55,13 +61,14 @@ def upload_file():
             filename = secure_filename(file.filename)
             
             stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
-            csv_input = csv.reader(stream)
+            csv_input = csv.reader(stream, delimiter='\t')
             
             uids=[]
 
             for row in csv_input:
                 facility = query_db('SELECT id from orgs where "name(en)" = ?',
                 [row[0]], one=True)
+                
                 print(row[0])
 
                 if facility is None:
