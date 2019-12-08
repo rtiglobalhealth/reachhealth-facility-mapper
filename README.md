@@ -11,3 +11,6 @@ This tool will look up the facility UIDs using the facility name. This can be us
  3. python facility_ids.py
  4. Go to the server and upload the csv file. See example.csv for an example
  5. Paste output in import file.
+
+ *See this [file](example.csv) for an example*  
+ 
