@@ -9,8 +9,8 @@ This tool will look up the facility UIDs using the facility name. This can be us
  1. install python
  2. run pip install -r requirements.txt
  3. python facility_ids.py
- 4. Go to the server and upload the csv file. See example.csv for an example
+ 4. Go to the server and upload the csv file. See [this file](example.csv) for an example.
  5. Paste output in import file.
 
- *See this [file](example.csv) for an example*  
+
  
