@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 import io
 import csv
 import sqlite3
+from flask_csv import send_csv
 
 
 app = Flask(__name__)
@@ -72,13 +73,15 @@ def upload_file():
                 print(row[0])
 
                 if facility is None:
-                    uids.append("")
+                    uids.append({"uid": ''})
                     print('No such Facility')
                 else:
-                    uids.append(facility['id'])
+                    uids.append({"uid": facility['id']})
                     #print(the_facility + 'has the id' + )
+            return send_csv(uids,
+                    "uids.csv", ["uid"])
 
-            return render_template("results.html", uids = uids);
+            #return render_template("results.html", uids = uids);
         else:
             flash('The only allowed file types is csv')
             return redirect(request.url)
