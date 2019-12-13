@@ -67,19 +67,19 @@ def upload_file():
             uids=[]
 
             for row in csv_input:
-                facility = query_db('SELECT id from orgs where "name(en)" = ?',
+                facility = query_db('SELECT id, "name(en)" from orgs where "name(en)" = ?',
                 [row[0]], one=True)
                 
                 print(row[0])
 
                 if facility is None:
-                    uids.append({"uid": ''})
+                    uids.append({"uid": '', "facility name": ''})
                     print('No such Facility')
                 else:
-                    uids.append({"uid": facility['id']})
+                    uids.append({"uid": facility['id'],"facility name": facility['name(en)']})
                     #print(the_facility + 'has the id' + )
             return send_csv(uids,
-                    "uids.csv", ["uid"])
+                    "uids.csv", ["uid","facility name"])
 
             #return render_template("results.html", uids = uids);
         else:
