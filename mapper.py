@@ -34,6 +34,8 @@ def upload_form():
 	return render_template('upload.html')
 
 def query_db(query, args=(), one=False):
+    print("query {}".format(query))
+    print("args {}".format(args))
     cur = g.db.execute(query, args)
     rv = [dict((cur.description[idx][0], value)
     for idx, value in enumerate(row)) for row in cur.fetchall()]
@@ -61,20 +63,22 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             
-            stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+            stream = io.StringIO(file.stream.read().decode("utf-8-sig"), newline=None)
             csv_input = csv.reader(stream, delimiter='\t')
             
             uids=[]
 
             for row in csv_input:
-                facility = query_db('SELECT id, "name(en)" from orgs where "name(en)" = ?',
+                print("checking {}".format(row[0]))
+
+                facility = query_db('SELECT id, "name(en)" from orgs where lower("name(en)") = lower(?)',
                 [row[0]], one=True)
                 
-                print(row[0])
+                
 
                 if facility is None:
                     uids.append({"uid": '', "facility name": ''})
-                    print('No such Facility')
+                    print('---No such Facility')
                 else:
                     uids.append({"uid": facility['id'],"facility name": facility['name(en)']})
                     #print(the_facility + 'has the id' + )
