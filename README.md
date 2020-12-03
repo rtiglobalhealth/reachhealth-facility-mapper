@@ -1,7 +1,7 @@
 ![philippines](static/ph.png?raw=true "Title")
 
 # Overview
-This tool will look up the facility UIDs using the facility name. This can be used when creating the data import files for DHIS2.
+This tool will look up the facility UIDs using the facility name. This can be used when creating the data import files for DHIS2. The input file should be tab delimited where the first column is the name of the org to be looked up and the second column is the UID of the parent. Including the parent id in the lookup is ensures that the right UID is returned when there are multiple org units with the same name.
 
 
 ### Getting started
