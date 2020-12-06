@@ -10,7 +10,7 @@ from flask_csv import send_csv
 
 
 app = Flask(__name__)
-ALLOWED_EXTENSIONS = set(['tsv','txt'])
+ALLOWED_EXTENSIONS = set(['csv'])
 basedir = os.path.abspath(os.path.dirname(__file__))
 DATABASE = 'orgs.sqlite'
 
@@ -62,15 +62,15 @@ def upload_file():
             filename = secure_filename(file.filename)
             
             stream = io.StringIO(file.stream.read().decode("utf-8-sig"), newline=None)
-            csv_input = csv.reader(stream, delimiter='\t')
+            csv_input = csv.reader(stream, delimiter=',')
             
             uids=[]
 
             for row in csv_input:
-                print("checking {}".format(row[0]))
+                print("checking {}".format(row[1]))
 
                 facility = query_db('SELECT id, "name(en)" from orgs where lower("name(en)") = lower(?) and parent = ?',
-                [row[0], row[1]], one=True)
+                [row[1], row[0]], one=True)
                 
                 
 
